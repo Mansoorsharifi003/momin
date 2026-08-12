@@ -404,3 +404,15 @@ def service_worker(request):
     });
     """
     return HttpResponse(js, content_type='application/javascript')
+
+@login_required
+@superuser_required
+def reset_data(request):
+    if request.method == 'POST':
+        Sale.objects.all().delete()
+        Expense.objects.all().delete()
+        s = ShopSettings.load()
+        s.opening_balance = 0
+        s.save()
+        messages.success(request, 'All sales & expenses deleted. Balances reset to zero. Users were kept.')
+    return redirect('tools')

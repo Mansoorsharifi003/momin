@@ -19,4 +19,5 @@ urlpatterns = [
     path('export/csv/', views.export_csv, name='export_csv'),
     path('backup/json/', views.backup_json, name='backup_json'),
     path('restore/json/', views.restore_json, name='restore_json'),
+    path('tools/reset-data/', views.reset_data, name='reset_data'),
 ]

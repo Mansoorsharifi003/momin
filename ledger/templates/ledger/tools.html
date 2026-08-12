@@ -1,21 +1,84 @@
 {% extends 'ledger/base.html' %}
+{% load humanize icons %}
 {% block content %}
-<div class="panel"><h3>Backup &amp; Export</h3>
-  <p style="color:var(--dim)">All data is stored locally in SQLite. No internet required.</p>
-  <div style="display:flex;gap:10px;flex-wrap:wrap">
-    <a class="btn btn-gold" href="{% url 'backup_json' %}">Export Backup (JSON)</a>
-    <a class="btn btn-ghost" href="{% url 'export_csv' %}?period=year">Full Excel (CSV)</a>
+
+<div class="page-head">
+  <div>
+    <h2>Tools &amp; Data</h2>
+    <p>Backup, export, storage and maintenance</p>
   </div>
-  <form method="post" action="{% url 'restore_json' %}" enctype="multipart/form-data" style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+  <a class="btn btn-ghost" href="{% url 'settings' %}">{% icon 'tools' %} Open Settings</a>
+</div>
+
+<!-- ===== Backup & Export ===== -->
+<div class="panel">
+  <h3>Backup &amp; Export</h3>
+  <p style="color:var(--dim);font-size:13px;margin-bottom:16px">
+    All data is stored locally in SQLite. No internet required.
+  </p>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <a class="btn btn-gold" href="{% url 'backup_json' %}">{% icon 'backup' %} Export Backup (JSON)</a>
+    <a class="btn btn-dark" href="{% url 'export_csv' %}?period=year">{% icon 'sheet' %} Full Excel (CSV)</a>
+    <a class="btn btn-ghost" href="{% url 'report_print' %}?period=year">{% icon 'printer' %} Report PDF</a>
+  </div>
+
+  <form method="post" action="{% url 'restore_json' %}" enctype="multipart/form-data"
+        style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
     {% csrf_token %}
-    <input type="file" name="file" accept=".json" class="input" style="width:auto" required>
-    <button class="btn btn-ghost" type="submit">Restore Backup</button>
+    <input type="file" name="file" accept=".json" class="input" style="width:auto;flex:1;min-width:200px" required>
+    <button class="btn btn-ghost" type="submit">{% icon 'restore' %} Restore Backup</button>
   </form>
 </div>
 
-<div class="panel"><h3>Stored Data</h3>
-  <div class="row"><div class="main">Sales records</div><b>{{ sales_count }}</b></div>
-  <div class="row"><div class="main">Expense records</div><b>{{ expenses_count }}</b></div>
-  <a class="btn btn-ghost" href="{% url 'settings' %}" style="margin-top:10px">Open Settings</a>
+<!-- ===== Stored Data ===== -->
+<div class="panel">
+  <h3>Stored Data</h3>
+
+  <div class="row">
+    <div class="ico">{% icon 'sales' %}</div>
+    <div class="main"><b>Sales records</b><small>Total entries in the sales book</small></div>
+    <div class="side">{{ sales_count|intcomma }}</div>
+  </div>
+
+  <div class="row">
+    <div class="ico">{% icon 'down' %}</div>
+    <div class="main"><b>Expense records</b><small>Total entries in the expense book</small></div>
+    <div class="side">{{ expenses_count|intcomma }}</div>
+  </div>
+
+  <div style="margin-top:18px;padding-top:18px;border-top:1px dashed var(--line)">
+    <p style="color:var(--dim);font-size:13px;margin-bottom:12px">
+      <b style="color:var(--neg)">Danger zone.</b> This deletes every sale &amp; expense and resets all
+      balances to zero. <b>User accounts are NOT deleted.</b>
+    </p>
+    <form method="post" action="{% url 'reset_data' %}"
+          onsubmit="return confirm('Delete ALL sales & expenses and reset balances to zero?\nUser accounts will be kept.');">
+      {% csrf_token %}
+      <button class="btn btn-danger" type="submit">{% icon 'trash' %} Reset Data (keep users)</button>
+    </form>
+  </div>
 </div>
+
+<!-- ===== Search ===== -->
+<div class="panel">
+  <h3>Search Everything</h3>
+  <p style="color:var(--dim);font-size:13px;margin-bottom:14px">
+    Find any sale, product, expense or date instantly.
+  </p>
+  <a class="btn btn-ghost" href="{% url 'search' %}">{% icon 'search' %} Open Search</a>
+</div>
+
+<!-- ===== About ===== -->
+<div class="panel">
+  <h3>About</h3>
+  <div class="row">
+    <div class="ico">{% icon 'gem' %}</div>
+    <div class="main">
+      <b>{{ settings_obj.shop_name }} · Shop Ledger v1.0</b>
+      <small>Offline-first · secure local database · Bahij Mitra Bold typography</small>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
