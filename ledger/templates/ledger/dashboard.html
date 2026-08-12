@@ -1,0 +1,118 @@
+{% extends 'ledger/base.html' %}
+{% load humanize icons %}
+{% block content %}
+
+<!-- ===== Hero / Net Balance ===== -->
+<div class="hero">
+  {% icon 'gem' 'hero-gem' %}
+  <div class="label">Net Balance</div>
+  <div class="num">{{ settings_obj.currency }} {{ ds.closing|intcomma }}</div>
+</div>
+
+<!-- ===== Stat Cards ===== -->
+<div class="tiles">
+  <div class="tile"><div class="chip c-blue">{% icon 'bank' %}</div>
+    <label>Previous Balance</label>
+    <b>{{ settings_obj.currency }} {{ ds.previous|intcomma }}</b>
+    <small>Carried to today</small></div>
+
+  <div class="tile hi"><div class="chip c-gold">{% icon 'sales' %}</div>
+    <label>Today's Sales</label>
+    <b>{{ settings_obj.currency }} {{ ds.sales.revenue|intcomma }}</b>
+    <small>{{ ds.sales.items }} items sold</small></div>
+
+  <div class="tile"><div class="chip c-green">{% icon 'up' %}</div>
+    <label>Today's Profit</label>
+    <b class="pos">{{ settings_obj.currency }} {{ ds.sales.profit|intcomma }}</b>
+    <small>Selling − purchase</small></div>
+
+  <div class="tile"><div class="chip c-red">{% icon 'down' %}</div>
+    <label>Today's Expenses</label>
+    <b class="neg">{{ settings_obj.currency }} {{ ds.expenses|intcomma }}</b>
+    <small>{{ ledger.expense_list|length }} records</small></div>
+
+  <div class="tile hi"><div class="chip c-violet">{% icon 'cash' %}</div>
+    <label>Current Cash</label>
+    <b>{{ settings_obj.currency }} {{ ds.closing|intcomma }}</b>
+    <small>In register now</small></div>
+</div>
+
+<!-- ===== Quick Actions ===== -->
+<div style="display:flex;gap:12px;margin-top:22px;flex-wrap:wrap">
+  <a class="btn btn-gold" href="{% url 'sale_new' %}">{% icon 'plus' %} Record Sale</a>
+  <a class="btn btn-dark" href="{% url 'expense_new' %}">{% icon 'plus' %} Add Expense</a>
+</div>
+
+<!-- ===== Daily Cash Calculation ===== -->
+<div class="panel">
+  <div class="p-head">
+    <h3>Daily Cash Calculation</h3>
+    <form method="get" style="display:flex;gap:8px">
+      <input type="date" name="date" class="input" value="{{ ledger_date|date:'Y-m-d' }}" style="width:auto">
+      <button class="btn btn-ghost btn-sm" type="submit">View</button>
+    </form>
+  </div>
+
+  <div class="row">
+    <div class="ico">{% icon 'bank' %}</div>
+    <div class="main"><b>Previous Balance</b><small>Opening of day</small></div>
+    <div class="side">{{ settings_obj.currency }} {{ ledger.previous|intcomma }}</div>
+  </div>
+
+  {% if ledger.sale_list %}
+  <div class="row">
+    <div class="ico">{% icon 'sales' %}</div>
+    <div class="main"><b>Sales ({{ ledger.sale_list|length }})</b><small>Revenue added</small></div>
+    <div class="side pos">+{{ settings_obj.currency }} {{ ledger.sales.revenue|intcomma }}</div>
+  </div>
+  {% endif %}
+
+  {% for e in ledger.expense_list %}
+  <div class="row">
+    <div class="ico">{% icon 'down' %}</div>
+    <div class="main"><b>{{ e.title }}</b><small>{{ e.category }}</small></div>
+    <div class="side neg">−{{ settings_obj.currency }} {{ e.amount|intcomma }}</div>
+  </div>
+  {% endfor %}
+
+  {% if not ledger.sale_list and not ledger.expense_list %}
+    <p style="color:var(--dim);text-align:center;padding:16px">No sales or expenses recorded on this day.</p>
+  {% endif %}
+
+  <div class="row" style="background:var(--grad-soft);border:1px solid var(--line)">
+    <div class="ico">{% icon 'cash' %}</div>
+    <div class="main"><b style="color:var(--gold-deep)">Final Balance</b><small>Closing of day</small></div>
+    <div class="side" style="font-size:24px;color:var(--gold-deep)">{{ settings_obj.currency }} {{ ledger.closing|intcomma }}</div>
+  </div>
+</div>
+
+<!-- ===== 7-Day Sales Chart ===== -->
+<div class="panel">
+  <h3>Last 7 Days · Sales</h3>
+  <div class="bars">
+    {% for s in spark %}
+    <div class="bar-g" title="{{ s.date }}: {{ settings_obj.currency }} {{ s.sales|intcomma }}">
+      <div class="bar" style="height:{{ s.pct }}%"></div>
+      <div class="bar-l">{{ s.date|date:'D' }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ===== Recent Activity ===== -->
+<div class="panel">
+  <h3>Recent Activity</h3>
+  {% for r in recent %}
+  <div class="row">
+    <div class="ico">{% if r.type == 'sale' %}{% icon 'sales' %}{% else %}{% icon 'down' %}{% endif %}</div>
+    <div class="main"><b>{{ r.label }}</b><small>{{ r.date }} · {{ r.type }}</small></div>
+    <span class="tag {% if r.type == 'sale' %}gld{% else %}negb{% endif %}">
+      {% if r.type == 'sale' %}+{% else %}−{% endif %}{{ settings_obj.currency }} {{ r.amount|intcomma }}
+    </span>
+  </div>
+  {% empty %}
+    <p style="color:var(--dim)">No activity yet.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}

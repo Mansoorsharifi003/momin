@@ -1,0 +1,37 @@
+{% extends 'ledger/base.html' %}
+{% block content %}
+<div class="panel" style="max-width:560px;margin:0 auto">
+  <h3>{{ title }}</h3>
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- Product Name with searchable dropdown -->
+    <div class="field">
+      <label>Product Name</label>
+      {{ form.product_name }}
+      <datalist id="product-list">
+        {% for name in product_names %}
+        <option value="{{ name }}">
+        {% endfor %}
+      </datalist>
+      <small style="color:var(--dim);font-size:11px;margin-top:4px;display:block">
+        Start typing to search existing products, or type a new name to add it.
+      </small>
+      {% if form.product_name.errors %}<small class="neg">{{ form.product_name.errors.0 }}</small>{% endif %}
+    </div>
+
+    <!-- Remaining fields -->
+    {% for field in form %}
+      {% if field.name != 'product_name' %}
+      <div class="field">
+        <label>{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<small class="neg">{{ field.errors.0 }}</small>{% endif %}
+      </div>
+      {% endif %}
+    {% endfor %}
+
+    <button class="btn btn-gold" type="submit" style="width:100%">Save</button>
+  </form>
+</div>
+{% endblock %}

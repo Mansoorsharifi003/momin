@@ -1,0 +1,27 @@
+{% extends 'ledger/base.html' %}
+{% load humanize %}
+{% block content %}
+<div class="p-head">
+  <h3 style="font-size:20px;letter-spacing:.06em;color:var(--text)">Daily Expenses</h3>
+  <span class="tag negb">Today {{ settings_obj.currency }} {{ today_stats.expenses|intcomma }}</span>
+</div>
+<a class="btn btn-gold" href="{% url 'expense_new' %}" style="width:100%;margin-bottom:14px">＋ Add Expense</a>
+
+<table>
+  <thead><tr><th>Date</th><th>Title</th><th>Category</th><th class="num-cell">Amount</th><th></th></tr></thead>
+  <tbody>
+  {% for e in expenses %}
+    <tr>
+      <td>{{ e.date|date:'M d' }}</td>
+      <td><b>{{ e.title }}</b>{% if e.notes %}<br><small style="color:var(--dim)">{{ e.notes }}</small>{% endif %}</td>
+      <td>{{ e.category }}</td>
+      <td class="num-cell neg">{{ settings_obj.currency }} {{ e.amount|intcomma }}</td>
+      <td><div class="actions">
+        <a class="btn btn-ghost btn-sm" href="{% url 'expense_edit' e.pk %}">Edit</a>
+        <a class="btn btn-danger btn-sm" href="{% url 'expense_delete' e.pk %}">✕</a>
+      </div></td>
+    </tr>
+  {% empty %}<tr><td colspan="5" style="text-align:center;color:var(--dim)">No expenses yet.</td></tr>{% endfor %}
+  </tbody>
+</table>
+{% endblock %}

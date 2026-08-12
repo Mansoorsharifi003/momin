@@ -1,0 +1,316 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign In · MOMIN Jewelry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'ledger/style.css' %}">
+<style>
+  /* ============ LIGHT BASE & SOFT GRADIENT ============ */
+  body{
+    display:flex;align-items:center;justify-content:center;min-height:100vh;
+    padding:20px;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,#fdfaf3 0%,#f7efdd 35%,#fbf3dc 65%,#fdfaf3 100%);
+    background-size:400% 400%;
+    animation:gradientShift 18s ease infinite;
+  }
+  @keyframes gradientShift{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
+
+  /* ============ SOFT LIGHT RAYS ============ */
+  .rays{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;opacity:.5}
+  .ray{
+    position:absolute;top:-20%;left:50%;width:3px;height:140%;
+    background:linear-gradient(to bottom,transparent,rgba(212,175,55,.35),transparent);
+    transform-origin:top center;filter:blur(3px);
+    animation:raySway 8s ease-in-out infinite;
+  }
+  .ray:nth-child(1){transform:rotate(-30deg)}
+  .ray:nth-child(2){transform:rotate(-15deg);animation-delay:1.5s;width:2px}
+  .ray:nth-child(3){transform:rotate(0deg);animation-delay:.8s;width:4px}
+  .ray:nth-child(4){transform:rotate(15deg);animation-delay:2.2s;width:2px}
+  .ray:nth-child(5){transform:rotate(30deg);animation-delay:1s}
+  @keyframes raySway{
+    0%,100%{opacity:.2;transform:rotate(var(--r,0deg)) scaleY(1)}
+    50%{opacity:.7;transform:rotate(var(--r,0deg)) scaleY(1.05)}
+  }
+
+  /* ============ WARM CENTER GLOW ============ */
+  .bg-glow{
+    position:absolute;width:700px;height:700px;border-radius:50%;
+    background:radial-gradient(circle,rgba(230,190,90,.35) 0%,rgba(230,190,90,.12) 40%,transparent 70%);
+    filter:blur(50px);top:50%;left:50%;transform:translate(-50%,-50%);
+    animation:glowPulse 5s ease-in-out infinite;z-index:1;pointer-events:none;
+  }
+  @keyframes glowPulse{
+    0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1)}
+    50%{opacity:.9;transform:translate(-50%,-50%) scale(1.15)}
+  }
+
+  /* ============ FLOATING DIAMONDS ============ */
+  .diamond{
+    position:absolute;border:1.5px solid rgba(184,134,11,.35);
+    background:linear-gradient(135deg,rgba(245,222,138,.4),rgba(255,255,255,.2));
+    box-shadow:0 4px 15px rgba(184,134,11,.15),inset 0 0 10px rgba(255,255,255,.5);
+    animation:floatDiamond linear infinite;pointer-events:none;z-index:2;
+  }
+  .d1{width:28px;height:28px;left:12%;top:20%;animation-duration:14s}
+  .d2{width:18px;height:18px;left:85%;top:30%;animation-duration:18s;animation-delay:2s}
+  .d3{width:22px;height:22px;left:20%;top:75%;animation-duration:16s;animation-delay:4s}
+  .d4{width:14px;height:14px;left:78%;top:70%;animation-duration:20s;animation-delay:1s}
+  .d5{width:24px;height:24px;left:50%;top:12%;animation-duration:15s;animation-delay:3s}
+  .d6{width:16px;height:16px;left:65%;top:85%;animation-duration:17s;animation-delay:5s}
+  @keyframes floatDiamond{
+    0%{transform:rotate(45deg) translateY(0);opacity:0}
+    15%{opacity:1}
+    85%{opacity:1}
+    100%{transform:rotate(405deg) translateY(-110vh);opacity:0}
+  }
+
+  /* ============ GOLD DUST PARTICLES ============ */
+  .particle{
+    position:absolute;bottom:-20px;border-radius:50%;pointer-events:none;z-index:2;
+    background:radial-gradient(circle,#fff 0%,rgba(230,190,90,.9) 45%,transparent 70%);
+    box-shadow:0 0 10px 1px rgba(212,175,55,.5);
+    animation:floatUp linear infinite;
+  }
+  .p1{left:8%;width:7px;height:7px;animation-duration:11s}
+  .p2{left:22%;width:4px;height:4px;animation-duration:15s;animation-delay:2s}
+  .p3{left:38%;width:8px;height:8px;animation-duration:13s;animation-delay:4s}
+  .p4{left:52%;width:5px;height:5px;animation-duration:17s;animation-delay:1s}
+  .p5{left:68%;width:6px;height:6px;animation-duration:12s;animation-delay:3s}
+  .p6{left:82%;width:4px;height:4px;animation-duration:16s;animation-delay:5s}
+  .p7{left:15%;width:9px;height:9px;animation-duration:14s;animation-delay:6s}
+  .p8{left:60%;width:5px;height:5px;animation-duration:10s;animation-delay:2.5s}
+  .p9{left:90%;width:6px;height:6px;animation-duration:13s;animation-delay:7s}
+  .p10{left:30%;width:4px;height:4px;animation-duration:18s;animation-delay:8s}
+  .p11{left:75%;width:7px;height:7px;animation-duration:12s;animation-delay:1.5s}
+  .p12{left:45%;width:5px;height:5px;animation-duration:15s;animation-delay:3.5s}
+  @keyframes floatUp{
+    0%{transform:translateY(0) translateX(0) scale(0);opacity:0}
+    15%{opacity:1;transform:translateY(-15vh) translateX(20px) scale(1)}
+    85%{opacity:.8}
+    100%{transform:translateY(-110vh) translateX(-30px) scale(.3);opacity:0}
+  }
+
+  /* ============ LIGHT CARD WITH GOLD BORDER ============ */
+  .auth-card{
+    width:100%;max-width:430px;position:relative;z-index:5;
+    background:rgba(255,255,255,.82);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border-radius:28px;padding:46px 40px;
+    box-shadow:0 25px 60px rgba(160,120,30,.18),0 0 40px rgba(212,175,55,.12);
+    animation:cardEnter .9s cubic-bezier(.2,.9,.3,1) both;
+    border:1px solid transparent;background-clip:padding-box;
+  }
+  .auth-card::before{
+    content:'';position:absolute;inset:-2px;border-radius:30px;z-index:-1;
+    background:linear-gradient(135deg,#e6c65c,#d4af37,#f5de8a,#b8860b,#e6c65c);
+    background-size:300% 300%;animation:borderGlow 4s linear infinite;opacity:.9;
+  }
+  .auth-card::after{
+    content:'';position:absolute;inset:0;border-radius:28px;z-index:-1;
+    background:rgba(255,255,255,.9);
+  }
+  @keyframes borderGlow{
+    0%{background-position:0% 50%}
+    100%{background-position:300% 50%}
+  }
+  @keyframes cardEnter{
+    from{opacity:0;transform:translateY(40px) scale(.95)}
+    to{opacity:1;transform:translateY(0) scale(1)}
+  }
+
+  /* ============ LOGO ============ */
+  .auth-logo{
+    width:80px;height:80px;border-radius:22px;background:var(--grad);
+    display:flex;align-items:center;justify-content:center;color:var(--ink);
+    margin:0 auto 24px;position:relative;
+    box-shadow:0 15px 35px rgba(184,134,11,.35),0 0 25px rgba(245,222,138,.5);
+    animation:float 3.5s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%,100%{transform:translateY(0) rotate(0)}
+    50%{transform:translateY(-8px) rotate(2deg)}
+  }
+  .auth-logo svg{
+    width:38px;height:38px;animation:gemSpin 7s linear infinite;
+    filter:drop-shadow(0 3px 6px rgba(35,26,8,.3));
+  }
+  @keyframes gemSpin{
+    0%{transform:rotateY(0)}
+    100%{transform:rotateY(360deg)}
+  }
+  .auth-logo::after{
+    content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.8),transparent);
+    animation:shimmer 2.5s ease-in-out infinite;border-radius:22px;
+  }
+  @keyframes shimmer{
+    0%{left:-100%}
+    60%,100%{left:200%}
+  }
+
+  /* ============ TITLE & TEXT ============ */
+  .auth-title{
+    text-align:center;font-size:28px;font-weight:700;letter-spacing:.16em;margin-bottom:6px;
+    background:linear-gradient(90deg,#8a6210 0%,#d4af37 25%,#b8860b 50%,#d4af37 75%,#8a6210 100%);
+    background-size:200% auto;
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    animation:goldShine 3s linear infinite;
+  }
+  @keyframes goldShine{
+    0%{background-position:0% center}
+    100%{background-position:200% center}
+  }
+  .auth-sub{
+    text-align:center;color:#8a7c60;font-size:14px;margin:6px 0 30px;letter-spacing:.06em;
+    opacity:0;animation:fadeUp .8s .3s cubic-bezier(.2,.9,.3,1) forwards;
+  }
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(10px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  /* ============ ERROR ============ */
+  .auth-err{
+    background:rgba(220,80,60,.08);color:#c0452e;border:1px solid rgba(220,80,60,.3);
+    padding:13px 15px;border-radius:13px;font-size:14px;margin-bottom:18px;text-align:center;
+    animation:shake .5s;
+  }
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    20%,60%{transform:translateX(-7px)}
+    40%,80%{transform:translateX(7px)}
+  }
+
+  /* ============ FIELDS ============ */
+  .field{margin-bottom:18px;opacity:0;animation:fadeUp .6s cubic-bezier(.2,.9,.3,1) forwards}
+  .field:nth-of-type(1){animation-delay:.4s}
+  .field:nth-of-type(2){animation-delay:.55s}
+  .field label{
+    display:block;font-size:11px;letter-spacing:.16em;color:#a5770a;
+    text-transform:uppercase;font-weight:700;margin-bottom:8px;
+  }
+  .field .input{
+    width:100%;background:#fffdf9;border:1px solid rgba(184,134,11,.3);
+    border-radius:13px;color:#2c2314;padding:14px 16px;font-size:16px;font-family:var(--sans);
+    outline:none;transition:all .3s;box-shadow:0 2px 8px rgba(160,120,30,.05);
+  }
+  .field .input::placeholder{color:#b3a68c}
+  .field .input:focus{
+    border-color:#d4af37;background:#fff;
+    box-shadow:0 0 0 4px rgba(212,175,55,.15),0 6px 18px rgba(184,134,11,.12);
+    transform:translateY(-2px);
+  }
+
+  /* ============ BUTTON ============ */
+  .auth-btn{
+    position:relative;overflow:hidden;width:100%;padding:15px;border-radius:14px;
+    background:linear-gradient(135deg,#f5de8a,#d4af37 50%,#b8860b);
+    color:#231a08;font-weight:700;font-size:16px;letter-spacing:.06em;
+    border:none;cursor:pointer;margin-top:12px;
+    box-shadow:0 10px 25px rgba(184,134,11,.35);
+    opacity:0;animation:fadeUp .6s .7s cubic-bezier(.2,.9,.3,1) forwards;
+    transition:all .3s;
+  }
+  .auth-btn:hover{
+    transform:translateY(-3px);box-shadow:0 15px 35px rgba(212,175,55,.5);
+    filter:brightness(1.06);
+  }
+  .auth-btn::after{
+    content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);
+    transition:left .6s;
+  }
+  .auth-btn:hover::after{left:100%}
+
+  /* ============ FOOTER ============ */
+  .auth-footer{
+    text-align:center;margin-top:30px;font-size:11px;letter-spacing:.24em;
+    color:#a3967a;text-transform:uppercase;
+    opacity:0;animation:fadeUp .6s .9s cubic-bezier(.2,.9,.3,1) forwards;
+  }
+  .auth-footer .gem{
+    color:#d4af37;display:inline-block;animation:spin 5s linear infinite;
+  }
+  @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+
+  @media(max-width:480px){
+    .auth-card{padding:36px 26px}
+    .auth-title{font-size:24px}
+  }
+</style>
+</head>
+<body>
+
+<!-- Animated Background Layers -->
+<div class="bg-glow"></div>
+
+<div class="rays">
+  <div class="ray" style="--r:-30deg"></div>
+  <div class="ray" style="--r:-15deg"></div>
+  <div class="ray" style="--r:0deg"></div>
+  <div class="ray" style="--r:15deg"></div>
+  <div class="ray" style="--r:30deg"></div>
+</div>
+
+<!-- Floating Diamonds -->
+<div class="diamond d1"></div>
+<div class="diamond d2"></div>
+<div class="diamond d3"></div>
+<div class="diamond d4"></div>
+<div class="diamond d5"></div>
+<div class="diamond d6"></div>
+
+<!-- Gold Dust Particles -->
+<div class="particle p1"></div><div class="particle p2"></div>
+<div class="particle p3"></div><div class="particle p4"></div>
+<div class="particle p5"></div><div class="particle p6"></div>
+<div class="particle p7"></div><div class="particle p8"></div>
+<div class="particle p9"></div><div class="particle p10"></div>
+<div class="particle p11"></div><div class="particle p12"></div>
+
+<!-- Login Card -->
+<div class="auth-card">
+  <div class="auth-logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>
+    </svg>
+  </div>
+
+  <div class="auth-title">MOMIN JEWELRY</div>
+  <div class="auth-sub">Sign in to your shop ledger</div>
+
+  {% if form.errors or form.non_field_errors %}
+    <div class="auth-err">Invalid username or password. Please try again.</div>
+  {% endif %}
+
+  <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <div class="field">
+      <label>Username</label>
+      <input type="text" name="username" class="input" placeholder="Enter username" autofocus required>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" name="password" class="input" placeholder="Enter password" required>
+    </div>
+    <button type="submit" class="auth-btn">Sign In</button>
+  </form>
+
+  <div class="auth-footer">
+    <span class="gem">✦</span>&nbsp; Shop Ledger &nbsp;<span class="gem">✦</span>
+  </div>
+</div>
+
+</body>
+</html>

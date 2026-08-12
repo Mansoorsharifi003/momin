@@ -1,0 +1,29 @@
+{% extends 'ledger/base.html' %}
+{% load humanize %}
+{% block content %}
+<div class="p-head">
+  <h3 style="font-size:20px;letter-spacing:.06em;color:var(--text)">Sales Book</h3>
+  <span class="tag gld">Today {{ settings_obj.currency }} {{ today_stats.sales.revenue|intcomma }}</span>
+</div>
+<a class="btn btn-gold" href="{% url 'sale_new' %}" style="width:100%;margin-bottom:14px">＋ Record Sale</a>
+
+<table>
+  <thead><tr><th>Date</th><th>Product</th><th>Qty</th><th class="num-cell">Cost</th><th class="num-cell">Sold</th><th class="num-cell">Profit</th><th></th></tr></thead>
+  <tbody>
+  {% for s in sales %}
+    <tr>
+      <td>{{ s.date|date:'M d' }}</td>
+      <td><b>{{ s.product_name }}</b>{% if s.notes %}<br><small style="color:var(--dim)">{{ s.notes }}</small>{% endif %}</td>
+      <td>{{ s.quantity }}</td>
+      <td class="num-cell">{{ settings_obj.currency }} {{ s.purchase_price|intcomma }}</td>
+      <td class="num-cell">{{ settings_obj.currency }} {{ s.selling_price|intcomma }}</td>
+      <td class="num-cell {% if s.profit >= 0 %}pos{% else %}neg{% endif %}">{{ settings_obj.currency }} {{ s.profit|intcomma }}</td>
+      <td><div class="actions">
+        <a class="btn btn-ghost btn-sm" href="{% url 'sale_edit' s.pk %}">Edit</a>
+        <a class="btn btn-danger btn-sm" href="{% url 'sale_delete' s.pk %}">✕</a>
+      </div></td>
+    </tr>
+  {% empty %}<tr><td colspan="7" style="text-align:center;color:var(--dim)">No sales yet.</td></tr>{% endfor %}
+  </tbody>
+</table>
+{% endblock %}

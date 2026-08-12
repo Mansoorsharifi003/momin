@@ -1,0 +1,87 @@
+{% extends 'ledger/base.html' %}
+{% load humanize icons %}
+{% block content %}
+
+<div class="page-head">
+  <div><h2>Reports</h2><p>{{ start|date:'d M Y' }} — {{ end|date:'d M Y' }}</p></div>
+</div>
+
+<div class="chips" style="margin-bottom:14px">
+  <a class="chip {% if period == 'today' %}active{% endif %}" href="?period=today">Today</a>
+  <a class="chip {% if period == 'yesterday' %}active{% endif %}" href="?period=yesterday">Yesterday</a>
+  <a class="chip {% if period == 'week' %}active{% endif %}" href="?period=week">This Week</a>
+  <a class="chip {% if period == 'month' %}active{% endif %}" href="?period=month">This Month</a>
+  <a class="chip {% if period == 'year' %}active{% endif %}" href="?period=year">This Year</a>
+  <a class="chip {% if period == 'custom' %}active{% endif %}" href="?period=custom">Custom…</a>
+</div>
+
+<form method="get" class="panel" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:0">
+  {% icon 'calendar' %}
+  <input type="hidden" name="period" value="custom">
+  <input type="date" name="from" class="input" value="{{ start|date:'Y-m-d' }}" style="width:auto">
+  <input type="date" name="to" class="input" value="{{ end|date:'Y-m-d' }}" style="width:auto">
+  <button class="btn btn-dark btn-sm" type="submit">Apply Range</button>
+</form>
+
+<div class="tiles">
+  <div class="tile hi"><div class="chip c-gold">{% icon 'sales' %}</div><label>Total Sales</label>
+    <b>{{ settings_obj.currency }} {{ stats.sales.revenue|intcomma }}</b><small>{{ stats.sales.items }} items</small></div>
+  <div class="tile"><div class="chip c-green">{% icon 'up' %}</div><label>Total Profit</label>
+    <b class="pos">{{ settings_obj.currency }} {{ stats.sales.profit|intcomma }}</b><small>Gross margin</small></div>
+  <div class="tile"><div class="chip c-red">{% icon 'down' %}</div><label>Total Expenses</label>
+    <b class="neg">{{ settings_obj.currency }} {{ stats.expenses|intcomma }}</b><small>All categories</small></div>
+  <div class="tile hi"><div class="chip c-violet">{% icon 'cash' %}</div><label>Net Balance</label>
+    <b>{{ settings_obj.currency }} {{ stats.net|intcomma }}</b><small>Sales − expenses</small></div>
+</div>
+
+<div class="panel">
+  <h3>Sales vs Expenses</h3>
+  <div class="bars">
+    {% for r in series %}
+    <div class="bar-g" title="{{ r.full }} — Sales {{ settings_obj.currency }} {{ r.s|intcomma }} · Exp {{ settings_obj.currency }} {{ r.e|intcomma }}">
+      <div class="bar-pair">
+        <div class="bar s" style="height:{{ r.ps }}%"></div>
+        <div class="bar e" style="height:{{ r.pe }}%"></div>
+      </div>
+      <div class="bar-l">{{ r.label }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="legend">
+    <span><i style="background:var(--grad)"></i>Sales</span>
+    <span><i style="background:#c0452e"></i>Expenses</span>
+  </div>
+</div>
+
+<div class="rep-cols">
+  <div class="panel" style="margin-top:22px">
+    <h3>Top Products</h3>
+    {% for p in top_products %}
+    <div class="row"><div class="ico">{% icon 'gem' %}</div>
+      <div class="main"><b>{{ p.product_name }}</b><small>{{ p.qty }} pcs · profit {{ settings_obj.currency }} {{ p.profit|intcomma }}</small></div>
+      <b style="color:var(--gold-deep)">{{ settings_obj.currency }} {{ p.revenue|intcomma }}</b></div>
+    {% empty %}<p style="color:var(--dim)">No sales in this period.</p>{% endfor %}
+  </div>
+
+  <div class="panel" style="margin-top:22px">
+    <h3>Expense Breakdown</h3>
+    {% for c in cat_break %}
+    <div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px">
+        <span style="color:var(--mut);font-weight:600">{{ c.category }}</span>
+        <b>{{ settings_obj.currency }} {{ c.total|intcomma }}</b></div>
+      <div style="height:8px;border-radius:5px;background:var(--bg-2);overflow:hidden">
+        <div style="height:100%;width:{% widthratio c.total max_cat 100 %}%;background:var(--grad);border-radius:5px"></div>
+      </div>
+    </div>
+    {% empty %}<p style="color:var(--dim)">No expenses in this period.</p>{% endfor %}
+  </div>
+</div>
+
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:22px">
+  <a class="btn btn-gold" href="{% url 'report_print' %}?period={{ period }}&from={{ start }}&to={{ end }}">{% icon 'printer' %} Export PDF</a>
+  <a class="btn btn-dark" href="{% url 'export_csv' %}?period={{ period }}&from={{ start }}&to={{ end }}">{% icon 'sheet' %} Export Excel</a>
+  <a class="btn btn-ghost" href="{% url 'backup_json' %}">{% icon 'backup' %} Backup</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'ledger/base.html' %}
+{% load humanize %}
+{% block content %}
+<form method="get" class="panel">
+  <div style="display:flex;gap:8px">
+    <input class="input" type="text" name="q" value="{{ q }}" placeholder="Search products, dates, expenses…">
+    <button class="btn btn-gold" type="submit">Search</button>
+  </div>
+</form>
+
+{% if q %}
+<div class="panel"><h3>Sales · {{ sale_results|length }}</h3>
+  {% for s in sale_results %}
+  <div class="row"><div class="ico">✦</div>
+    <div class="main"><b>{{ s.product_name }}</b><small>{{ s.date }} · Qty {{ s.quantity }} · Sold {{ settings_obj.currency }} {{ s.total_sale|intcomma }}</small></div>
+    <span class="tag {% if s.profit >= 0 %}pos{% else %}negb{% endif %}">{{ settings_obj.currency }} {{ s.profit|intcomma }}</span></div>
+  {% empty %}<p style="color:var(--dim)">No sales matched.</p>{% endfor %}
+</div>
+
+<div class="panel"><h3>Expenses · {{ expense_results|length }}</h3>
+  {% for e in expense_results %}
+  <div class="row"><div class="ico">▾</div>
+    <div class="main"><b>{{ e.title }}</b><small>{{ e.date }} · {{ e.category }}</small></div>
+    <span class="tag negb">−{{ settings_obj.currency }} {{ e.amount|intcomma }}</span></div>
+  {% empty %}<p style="color:var(--dim)">No expenses matched.</p>{% endfor %}
+</div>
+{% endif %}
+{% endblock %}

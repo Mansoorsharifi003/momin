@@ -1,0 +1,21 @@
+{% extends 'ledger/base.html' %}
+{% block content %}
+<div class="panel"><h3>Backup &amp; Export</h3>
+  <p style="color:var(--dim)">All data is stored locally in SQLite. No internet required.</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <a class="btn btn-gold" href="{% url 'backup_json' %}">Export Backup (JSON)</a>
+    <a class="btn btn-ghost" href="{% url 'export_csv' %}?period=year">Full Excel (CSV)</a>
+  </div>
+  <form method="post" action="{% url 'restore_json' %}" enctype="multipart/form-data" style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+    {% csrf_token %}
+    <input type="file" name="file" accept=".json" class="input" style="width:auto" required>
+    <button class="btn btn-ghost" type="submit">Restore Backup</button>
+  </form>
+</div>
+
+<div class="panel"><h3>Stored Data</h3>
+  <div class="row"><div class="main">Sales records</div><b>{{ sales_count }}</b></div>
+  <div class="row"><div class="main">Expense records</div><b>{{ expenses_count }}</b></div>
+  <a class="btn btn-ghost" href="{% url 'settings' %}" style="margin-top:10px">Open Settings</a>
+</div>
+{% endblock %}

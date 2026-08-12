@@ -1,0 +1,16 @@
+{
+  "name": "MOMIN Jewelry - Shop Ledger",
+  "short_name": "MOMIN Jewelry",
+  "description": "Jewelry shop sales, expenses and profit ledger",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f3ec",
+  "theme_color": "#b8860b",
+  "icons": [
+    { "src": "/static/ledger/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/static/ledger/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/static/ledger/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

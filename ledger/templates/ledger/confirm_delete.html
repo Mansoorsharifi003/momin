@@ -1,0 +1,12 @@
+{% extends 'ledger/base.html' %}
+{% block content %}
+<div class="panel" style="max-width:480px;margin:0 auto;text-align:center">
+  <h3>Delete this {{ kind }}?</h3>
+  <p style="color:var(--mut)"><b>{{ object }}</b> will be permanently removed.</p>
+  <form method="post" style="display:flex;gap:10px;justify-content:center">
+    {% csrf_token %}
+    <a class="btn btn-ghost" href="javascript:history.back()">Cancel</a>
+    <button class="btn btn-danger" type="submit">Delete</button>
+  </form>
+</div>
+{% endblock %}
