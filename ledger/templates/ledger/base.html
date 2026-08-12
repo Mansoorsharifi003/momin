@@ -50,8 +50,10 @@ if ('serviceWorker' in navigator) {
     <a href="{% url 'search' %}"
        class="{% if n == 'search' %}active{% endif %}">{% icon 'search' %}Search</a>
 
-    <a href="{% url 'tools' %}"
-       class="{% if n == 'tools' or n == 'settings' %}active{% endif %}">{% icon 'tools' %}Tools</a>
+    {% if user.is_superuser %}
+<a href="{% url 'tools' %}"
+   class="{% if n == 'tools' or n == 'settings' %}active{% endif %}">{% icon 'tools' %}Tools</a>
+{% endif %}
   {% endwith %}
   </div>
 

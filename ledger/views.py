@@ -14,8 +14,15 @@ from . import services
 from .forms import SaleForm, ExpenseForm, SettingsForm
 from .models import Sale, Expense, ShopSettings
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponse
 from django.views.decorators.cache import never_cache
+
+def superuser_required(view_func):
+    return user_passes_test(
+        lambda u: u.is_active and u.is_superuser,
+        login_url='dashboard'          # staff get sent to Dashboard
+    )(view_func)
 
 
 def _parse_date(value, default):
@@ -259,6 +266,7 @@ def search(request):
 
 # ---------- Settings & Tools ----------
 @login_required
+@superuser_required
 def settings_view(request):
     obj = ShopSettings.load()
     form = SettingsForm(request.POST or None, instance=obj)
@@ -269,6 +277,7 @@ def settings_view(request):
     return render(request, 'ledger/settings.html', {'form': form, 'settings_obj': obj})
 
 @login_required
+@superuser_required
 def tools(request):
     return render(request, 'ledger/tools.html', {
         'settings_obj': ShopSettings.load(),
@@ -307,6 +316,7 @@ def export_csv(request):
     return response
 
 @login_required
+@superuser_required
 def backup_json(request):
     data = {
         'app': 'MOMIN Jewelry',
@@ -325,6 +335,7 @@ def backup_json(request):
     return response
 
 @login_required
+@superuser_required
 def restore_json(request):
     if request.method == 'POST' and request.FILES.get('file'):
         try:
