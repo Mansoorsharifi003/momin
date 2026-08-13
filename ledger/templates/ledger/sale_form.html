@@ -1,26 +1,34 @@
 {% extends 'ledger/base.html' %}
+{% load humanize %}
 {% block content %}
 <div class="panel" style="max-width:560px;margin:0 auto">
   <h3>{{ title }}</h3>
   <form method="post">
     {% csrf_token %}
 
-    <!-- Product Name with searchable dropdown -->
+    <!-- ===== Product picker: dropdown list ===== -->
+    <div class="field">
+      <label>Choose Existing Product</label>
+      <select id="product-select" class="input">
+        <option value="">— select a product —</option>
+        {% for name in product_names %}
+        <option value="{{ name }}">{{ name }}</option>
+        {% endfor %}
+        <option value="__new__">＋ Add new product…</option>
+      </select>
+    </div>
+
+    <!-- ===== Product name (what actually saves) ===== -->
     <div class="field">
       <label>Product Name</label>
       {{ form.product_name }}
-      <datalist id="product-list">
-        {% for name in product_names %}
-        <option value="{{ name }}">
-        {% endfor %}
-      </datalist>
       <small style="color:var(--dim);font-size:11px;margin-top:4px;display:block">
-        Start typing to search existing products, or type a new name to add it.
+        Pick from the list above, or type a new name here.
       </small>
       {% if form.product_name.errors %}<small class="neg">{{ form.product_name.errors.0 }}</small>{% endif %}
     </div>
 
-    <!-- Remaining fields -->
+    <!-- ===== Remaining fields ===== -->
     {% for field in form %}
       {% if field.name != 'product_name' %}
       <div class="field">
@@ -34,4 +42,25 @@
     <button class="btn btn-gold" type="submit" style="width:100%">Save</button>
   </form>
 </div>
+
+<script>
+  const sel = document.getElementById('product-select');
+  const inp = document.getElementById('id_product_name');
+
+  sel.addEventListener('change', () => {
+    if (sel.value === '__new__') {
+      inp.value = '';
+      inp.focus();
+    } else if (sel.value) {
+      inp.value = sel.value;
+    }
+  });
+
+  // On load (edit mode): if the saved product is in the list, pre-select it.
+  if (inp.value) {
+    for (const opt of sel.options) {
+      if (opt.value === inp.value) { sel.value = inp.value; break; }
+    }
+  }
+</script>
 {% endblock %}
