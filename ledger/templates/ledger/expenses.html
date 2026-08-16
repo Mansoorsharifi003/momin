@@ -6,7 +6,7 @@
   <span class="tag negb">Today {{ settings_obj.currency }} {{ today_stats.expenses|intcomma }}</span>
 </div>
 <a class="btn btn-gold" href="{% url 'expense_new' %}" style="width:100%;margin-bottom:14px">＋ Add Expense</a>
-
+<div class="table-wrap">
 <table>
   <thead><tr><th>Date</th><th>Title</th><th>Category</th><th class="num-cell">Amount</th><th></th></tr></thead>
   <tbody>
@@ -24,4 +24,5 @@
   {% empty %}<tr><td colspan="5" style="text-align:center;color:var(--dim)">No expenses yet.</td></tr>{% endfor %}
   </tbody>
 </table>
+</div>
 {% endblock %}

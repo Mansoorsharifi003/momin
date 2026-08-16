@@ -1,29 +1,62 @@
 {% extends 'ledger/base.html' %}
 {% load humanize %}
 {% block content %}
+
+<style>
+  /* ===== Dropdown with search box inside ===== */
+  .combo{position:relative}
+  .combo .input{padding-right:46px}
+  .combo-toggle{
+    position:absolute;right:6px;top:50%;transform:translateY(-50%);
+    width:36px;height:36px;border:none;border-radius:10px;background:var(--grad-soft);
+    color:var(--gold-deep);cursor:pointer;font-size:15px;line-height:1;
+  }
+  .combo-panel{
+    position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;
+    border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);
+    z-index:70;display:none;overflow:hidden;
+  }
+  .combo-panel.open{display:block}
+  .combo-search{
+    width:100%;border:none;border-bottom:1px solid var(--line-soft);
+    padding:13px 15px;font-size:15px;outline:none;background:#fffdf9;font-family:var(--sans);
+  }
+  .combo-list{max-height:220px;overflow:auto}
+  .combo-opt{
+    display:block;width:100%;text-align:left;padding:12px 15px;border:none;background:none;
+    font-size:15px;color:var(--text);cursor:pointer;font-family:var(--sans);
+  }
+  .combo-opt:hover,.combo-opt:active{background:rgba(184,134,11,.08)}
+  .combo-new{color:var(--gold-deep);font-weight:600;border-top:1px dashed var(--line-soft)}
+  .combo-empty{padding:12px 15px;color:var(--dim);font-size:13px}
+</style>
+
 <div class="panel" style="max-width:560px;margin:0 auto">
   <h3>{{ title }}</h3>
   <form method="post">
     {% csrf_token %}
 
-    <!-- ===== Product picker: dropdown list ===== -->
-    <div class="field">
-      <label>Choose Existing Product</label>
-      <select id="product-select" class="input">
-        <option value="">— select a product —</option>
-        {% for name in product_names %}
-        <option value="{{ name }}">{{ name }}</option>
-        {% endfor %}
-        <option value="__new__">＋ Add new product…</option>
-      </select>
-    </div>
-
-    <!-- ===== Product name (what actually saves) ===== -->
+    <!-- ===== Product name: dropdown with search box ===== -->
     <div class="field">
       <label>Product Name</label>
-      {{ form.product_name }}
+      <div class="combo">
+        {{ form.product_name }}
+        <button type="button" class="combo-toggle" id="comboToggle" title="Open list">▾</button>
+
+        <div class="combo-panel" id="comboPanel">
+          <!-- search box INSIDE the dropdown -->
+          <input type="text" id="comboSearch" class="combo-search" placeholder="Search products…" autocomplete="off">
+          <div class="combo-list" id="comboList">
+            {% for name in product_names %}
+              <button type="button" class="combo-opt" data-value="{{ name }}">{{ name }}</button>
+            {% endfor %}
+            <button type="button" class="combo-opt combo-new" id="comboNew" hidden></button>
+            <div class="combo-empty" id="comboEmpty" hidden>No products yet.</div>
+          </div>
+        </div>
+      </div>
       <small style="color:var(--dim);font-size:11px;margin-top:4px;display:block">
-        Pick from the list above, or type a new name here.
+        Tap ▾ to open the list and search, or type a new name directly.
       </small>
       {% if form.product_name.errors %}<small class="neg">{{ form.product_name.errors.0 }}</small>{% endif %}
     </div>
@@ -44,23 +77,52 @@
 </div>
 
 <script>
-  const sel = document.getElementById('product-select');
-  const inp = document.getElementById('id_product_name');
+  const inp    = document.getElementById('id_product_name');
+  const toggle = document.getElementById('comboToggle');
+  const panel  = document.getElementById('comboPanel');
+  const search = document.getElementById('comboSearch');
+  const list   = document.getElementById('comboList');
+  const opts   = Array.from(list.querySelectorAll('.combo-opt:not(.combo-new)'));
+  const newBtn = document.getElementById('comboNew');
+  const empty  = document.getElementById('comboEmpty');
 
-  sel.addEventListener('change', () => {
-    if (sel.value === '__new__') {
-      inp.value = '';
-      inp.focus();
-    } else if (sel.value) {
-      inp.value = sel.value;
-    }
-  });
+  function openPanel(){
+    panel.classList.add('open');
+    search.value = '';
+    applyFilter();
+    search.focus();
+  }
+  function closePanel(){ panel.classList.remove('open'); }
 
-  // On load (edit mode): if the saved product is in the list, pre-select it.
-  if (inp.value) {
-    for (const opt of sel.options) {
-      if (opt.value === inp.value) { sel.value = inp.value; break; }
+  function applyFilter(){
+    const q = search.value.trim().toLowerCase();
+    let visible = 0;
+    opts.forEach(o => {
+      const m = o.dataset.value.toLowerCase().includes(q);
+      o.style.display = m ? '' : 'none';
+      if (m) visible++;
+    });
+    empty.hidden = !(visible === 0 && !q);          // "No products yet" only when truly empty
+    if (q) {                                         // offer "add new" while searching
+      newBtn.hidden = false;
+      newBtn.textContent = '＋ Use "' + search.value.trim() + '" as new product';
+      newBtn.dataset.value = search.value.trim();
+    } else {
+      newBtn.hidden = true;
     }
   }
+
+  toggle.addEventListener('click', e => {
+    e.stopPropagation();
+    panel.classList.contains('open') ? closePanel() : openPanel();
+  });
+  search.addEventListener('input', applyFilter);
+  opts.forEach(o => o.addEventListener('click', () => { inp.value = o.dataset.value; closePanel(); }));
+  newBtn.addEventListener('click', () => { inp.value = newBtn.dataset.value; closePanel(); });
+
+  // close when clicking anywhere outside
+  document.addEventListener('click', e => {
+    if (!panel.contains(e.target) && e.target !== toggle) closePanel();
+  });
 </script>
 {% endblock %}

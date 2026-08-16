@@ -5,12 +5,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}MOMIN Jewelry{% endblock %}</title>
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="{% static 'ledger/style.css' %}">
 <link rel="manifest" href="{% static 'ledger/manifest.json' %}">
 <meta name="theme-color" content="#b8860b">
 <meta name="mobile-web-app-capable" content="yes">
@@ -18,42 +15,25 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="MOMIN Jewelry">
 <link rel="apple-touch-icon" href="{% static 'ledger/icons/icon-192.png' %}">
+<link rel="stylesheet" href="{% static 'ledger/style.css' %}?v=99">
 </head>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js');
-  });
-}
-</script>
-
 <body>
 
-<nav class="topnav">
+<nav class="topnav" id="topnav">
   <div class="brand"><span class="logo">{% icon 'gem' %}</span> MOMIN&nbsp;JEWELRY</div>
+
+  <button class="menu-toggle" id="menuToggle" aria-label="Open menu">{% icon 'menu' %}</button>
 
   <div class="links">
   {% with n=request.resolver_match.url_name %}
-    <a href="{% url 'dashboard' %}"
-       class="{% if n == 'dashboard' %}active{% endif %}">{% icon 'dashboard' %}Dashboard</a>
-
-    <a href="{% url 'sales' %}"
-       class="{% if n == 'sales' or n == 'sale_new' or n == 'sale_edit' or n == 'sale_delete' %}active{% endif %}">{% icon 'sales' %}Sales</a>
-
-    <a href="{% url 'expenses' %}"
-       class="{% if n == 'expenses' or n == 'expense_new' or n == 'expense_edit' or n == 'expense_delete' %}active{% endif %}">{% icon 'expenses' %}Expenses</a>
-
-    <a href="{% url 'reports' %}"
-       class="{% if n == 'reports' or n == 'report_print' %}active{% endif %}">{% icon 'reports' %}Reports</a>
-
-    <a href="{% url 'search' %}"
-       class="{% if n == 'search' %}active{% endif %}">{% icon 'search' %}Search</a>
-
+    <a href="{% url 'dashboard' %}" class="{% if n == 'dashboard' %}active{% endif %}">{% icon 'dashboard' %}Dashboard</a>
+    <a href="{% url 'sales' %}" class="{% if n == 'sales' or n == 'sale_new' or n == 'sale_edit' or n == 'sale_delete' %}active{% endif %}">{% icon 'sales' %}Sales</a>
+    <a href="{% url 'expenses' %}" class="{% if n == 'expenses' or n == 'expense_new' or n == 'expense_edit' or n == 'expense_delete' %}active{% endif %}">{% icon 'expenses' %}Expenses</a>
+    <a href="{% url 'reports' %}" class="{% if n == 'reports' or n == 'report_print' %}active{% endif %}">{% icon 'reports' %}Reports</a>
+    <a href="{% url 'search' %}" class="{% if n == 'search' %}active{% endif %}">{% icon 'search' %}Search</a>
     {% if user.is_superuser %}
-<a href="{% url 'tools' %}"
-   class="{% if n == 'tools' or n == 'settings' %}active{% endif %}">{% icon 'tools' %}Tools</a>
-{% endif %}
+    <a href="{% url 'tools' %}" class="{% if n == 'tools' or n == 'settings' %}active{% endif %}">{% icon 'tools' %}Tools</a>
+    {% endif %}
   {% endwith %}
   </div>
 
@@ -72,11 +52,20 @@ if ('serviceWorker' in navigator) {
   {% if messages %}
     {% for m in messages %}<div class="msg {{ m.tags }}">{{ m }}</div>{% endfor %}
   {% endif %}
-
   {% block content %}{% endblock %}
-
   <div class="footer">✦ &nbsp; MOMIN JEWELRY · Shop Ledger &nbsp; ✦</div>
 </main>
+
+<script>
+  const nav = document.getElementById('topnav');
+  document.getElementById('menuToggle').addEventListener('click', () => nav.classList.toggle('open'));
+  nav.querySelectorAll('.links a').forEach(a => a.addEventListener('click', () => nav.classList.remove('open')));
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
+  }
+</script>
 
 </body>
 </html>

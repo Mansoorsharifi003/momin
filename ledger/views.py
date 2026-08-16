@@ -79,7 +79,7 @@ def sales_list(request):
 
 @login_required
 def sale_new(request):
-    form = SaleForm(request.POST or None, initial={'date': date.today(), 'quantity': 1})
+    form = SaleForm(request.POST or None, initial={'date': date.today()})
     if request.method == 'POST' and form.is_valid():
         form.save()
         messages.success(request, 'Sale recorded.')

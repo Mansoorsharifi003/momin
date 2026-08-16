@@ -19,6 +19,11 @@ class SaleForm(forms.ModelForm):
             'date': forms.DateInput(attrs={'type': 'date', 'class': 'input'}),
             'notes': forms.Textarea(attrs={'rows': 2, 'class': 'input'}),
         }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # New sale: leave quantity blank so you type it yourself
+        if self.instance.pk is None:
+            self.fields['quantity'].initial = None
 
 
 class ExpenseForm(forms.ModelForm):
